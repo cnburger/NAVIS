@@ -46,7 +46,7 @@ Alternativly one can make use of the Python pip commands:
 pip install numpy
 pip install pandas
 pip install sqlalchemy
-pip install spycopg2
+pip install sycopg2
 pip install matplotlib
 ~~~~
 

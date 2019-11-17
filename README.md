@@ -22,8 +22,8 @@ A video of NAVIS in action can be seen [here](https://www.youtube.com/watch?v=Ff
 
 # Getting NAVIS up and running:
 ## Compatability:
-Windows 10
-Ubuntu (coming soon)
+- Windows 10
+- Ubuntu (coming soon)
 
 ## What to install?
 ### Python Related software
@@ -40,3 +40,14 @@ If you are struggling to install Basemap please make use of this YouTube [tutori
 - [Psycopg](http://initd.org/psycopg/download/)
 - [PostgreSQL](https://www.postgresql.org/download/) & [PostGIS](https://postgis.net/install/)
 - [SQLAlchemy](https://www.sqlalchemy.org/download.html)
+
+Alternativly one can make use of the Python pip commands:
+~~~~
+pip install numpy
+pip install pandas
+pip install sqlalchemy
+pip install spycopg2
+pip install matplotlib
+~~~~
+
+

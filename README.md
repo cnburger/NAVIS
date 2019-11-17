@@ -36,6 +36,7 @@ If you are struggling to install Basemap please make use of this YouTube [tutori
 
 ### To save a .mkv video file
 - [FFMpeg](https://www.ffmpeg.org/download.html)
+- Extract the FFmpeg to the root directory of the Python script
 ### Database tools
 - [Psycopg](http://initd.org/psycopg/download/)
 - [PostgreSQL](https://www.postgresql.org/download/) & [PostGIS](https://postgis.net/install/)
@@ -46,8 +47,14 @@ Alternativly one can make use of the Python pip commands:
 pip install numpy
 pip install pandas
 pip install sqlalchemy
-pip install Psycopg2
+pip install psycopg2
 pip install matplotlib
 ~~~~
+
+## Setting up the directory
+- Download the files as it is currently on this GitHib [repository](https://github.com/cnburger/navis).
+- Make sure that the images are in the "Ïmages" file, there should be 7 images.
+- There should be an empty folder called "Videos", this is where the animation video will be saved to.
+- Make sure that there is  file called "FFmpeg", were the FFmpeg files was extraxted to. This folder should have the following within it: "bin","doc", "presets, "LICENSE", "README".
 
 

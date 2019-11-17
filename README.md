@@ -31,7 +31,6 @@ A video of NAVIS in action can be seen [here](https://www.youtube.com/watch?v=Ff
 - [Numpy](https://numpy.org/)
 - [Pandas](https://pandas.pydata.org/)
 - [Matplotlib](https://matplotlib.org/users/installing.html) & [Basemap](https://matplotlib.org/basemap/)
-- GEOS ()
 
 If you are struggling to install Basemap please make use of this YouTube [tutorial](https://youtu.be/mXR47qiTdWQ)
 

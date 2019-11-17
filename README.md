@@ -31,6 +31,7 @@ A video of NAVIS in action can be seen [here](https://www.youtube.com/watch?v=Ff
 - [Numpy](https://numpy.org/)
 - [Pandas](https://pandas.pydata.org/)
 - [Matplotlib](https://matplotlib.org/users/installing.html) & [Basemap](https://matplotlib.org/basemap/)
+- GEOS ()
 
 If you are struggling to install Basemap please make use of this YouTube [tutorial](https://youtu.be/mXR47qiTdWQ)
 
@@ -42,6 +43,9 @@ If you are struggling to install Basemap please make use of this YouTube [tutori
 - [PostgreSQL](https://www.postgresql.org/download/) & [PostGIS](https://postgis.net/install/)
 - [SQLAlchemy](https://www.sqlalchemy.org/download.html)
 
+### GUI software
+- [Tkinter](https://tkdocs.com/tutorial/install.html)
+
 Alternativly one can make use of the Python pip commands:
 ~~~~
 pip install numpy
@@ -49,6 +53,8 @@ pip install pandas
 pip install sqlalchemy
 pip install psycopg2
 pip install matplotlib
+pip install tkinter
+pip install geos
 ~~~~
 
 ## Setting up the directory
@@ -56,5 +62,9 @@ pip install matplotlib
 - Make sure that the images are in the "Ïmages" file, there should be 7 images.
 - There should be an empty folder called "Videos", this is where the animation video will be saved to.
 - Make sure that there is  file called "FFmpeg", were the FFmpeg files was extraxted to. This folder should have the following within it: "bin","doc", "presets, "LICENSE", "README".
+
+# Running the script
+- Open in your favourite Python editor and run the script from its location
+- Open cmd and run it with Python
 
 

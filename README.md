@@ -23,8 +23,7 @@ A video of NAVIS in action can be seen [here](https://www.youtube.com/watch?v=Ff
 # Getting NAVIS up and running:
 ## Compatibility:
 - Windows 10
-- Ubuntu (coming soon)
-
+- Ubuntu 
 ## What to install?
 ### Python Related software
 - [Python 3](https://www.python.org/downloads/)

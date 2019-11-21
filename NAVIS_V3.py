@@ -649,8 +649,9 @@ class StaticMapFrame(tk.Frame):
                     if(sog_marker_plot == 0): #if zero, scale up. cannot have 0 marker size
                         sog_marker_plot +=1
 
-                    if((i%df_change_colour == 0) and (colour < 149)): #149 amt of shades
-                        colour += 1 #change colour shade
+                    if(df_change_colour != 0): #Avoid devide by zero if an observation has less than  150 observations
+                        if((i%df_change_colour == 0) and (colour < 149)): #149 amt of shades
+                            colour += 1 #change colour shade
 
                     #Adding annotations
                     if(chk_annotation_status.get() == 1):
@@ -730,6 +731,7 @@ class StaticMapFrame(tk.Frame):
             plt.xlabel("Longitude", fontsize = 15, labelpad = 25)
             plt.ylabel("Latitude", fontsize = 15, labelpad = 30)
             plt.title("Static plot of vessels", pad = 5, size = 18)
+            plt.get_current_fig_manager().full_screen_toggle()
             plt.show() #start plot
 
         def annotationObjectState(status):
@@ -867,7 +869,12 @@ class HeatMapFrame(tk.Frame):
         #Defining labels for the frame
         lbl_heatmap_heading = ttk.Label(self,text = "Heatmap Generation",
                             font = HEADING_FONT, background = BACKGROUND_COLOUR)
-        lbl_chooseRadius= ttk.Label(self,text = "Radius size:",
+        lbl_chooseRadius = ttk.Label(self,text = "Radius size:",
+                            font = ENTRY_FONT, background = BACKGROUND_COLOUR)
+
+        lbl_sogLower = ttk.Label(self,text = "SOG lower bound:",
+                            font = ENTRY_FONT, background = BACKGROUND_COLOUR)
+        lbl_sogUpper = ttk.Label(self,text = "SOG upper bound:",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
         lbl_Quality =  ttk.Label(self,text ="Quality of plot:",
                             font =PLOT_FONT_Label,background = BACKGROUND_COLOUR)
@@ -878,6 +885,9 @@ class HeatMapFrame(tk.Frame):
                             font =("Century Gothic",20),background = BACKGROUND_COLOUR)
         lbl_chooseRadiusKM = ttk.Label(self,text = "km",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
+        #notifying the user that the bounds are inclusive
+        lbl_boundsInclusive = ttk.Label(self,text = "*bounds are inclusive",
+                            font = ("Century Gothic",8), background = BACKGROUND_COLOUR)
         lbl_Patient = ttk.Label(self,text = "",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
         lbl_how = ttk.Label(self,text = "*double click on centre",
@@ -888,6 +898,15 @@ class HeatMapFrame(tk.Frame):
         grid_Radius= ttk.Combobox(self, font = ENTRY_FONT)
         grid_Radius['values']= (np.arange(100,510,10)).tolist()
         grid_Radius.current(8) #Setting the default, starting value
+
+        #Combobox for the sog bounds for the heatmaps
+        grid_lowerBound= ttk.Combobox(self, font = ENTRY_FONT)
+        grid_lowerBound['values']= (np.arange(0,150,1)).tolist()
+        grid_lowerBound.current(0) #Setting the default, starting value
+
+        grid_UppperBound= ttk.Combobox(self, font = ENTRY_FONT)
+        grid_UppperBound['values']= (np.arange(0,150,1)).tolist()
+        grid_UppperBound.current(100) #Setting the default, starting value
 
         #Quality of the plot combo option
         grid_quality = ttk.Combobox(self, font = ENTRY_FONT)
@@ -918,11 +937,18 @@ class HeatMapFrame(tk.Frame):
         lbl_chooseRadiusKM.config(anchor = 'e')
         lbl_chooseRadiusKM.grid(row = 2, column = 3, sticky = 'w',padx = BUTTON_PADX,
                             pady = BUTTON_PADY)
-        btn_chooseCentre.grid(row=4,column = 2, pady = 10)
+
+        lbl_sogLower.grid(row= 4, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_sogUpper.grid(row= 5, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        grid_lowerBound.grid(row= 4, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        grid_UppperBound.grid(row= 5, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_boundsInclusive.grid(row= 5, column = 3,padx = BUTTON_PADX, pady = BUTTON_PADY)
+
+        btn_chooseCentre.grid(row=7,column = 2, pady = 10)
         lbl_how.configure(anchor = 'w')
-        lbl_how.grid(row=4, column = 3, sticky = "w")
-        btn_back.grid(row=5, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        lbl_Patient.grid(row=6,column = 2, pady=50, columnspan = 10)
+        lbl_how.grid(row=7, column = 3, sticky = "w")
+        btn_back.grid(row=8, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_Patient.grid(row=9,column = 2, pady=50, columnspan = 10)
 
 
         def chooseCentre():
@@ -989,7 +1015,9 @@ class HeatMapFrame(tk.Frame):
                 plt.gcf().canvas.draw_idle() # draw label
 
                 if(click_times == 1):
-                    drawHeatmapnow(xpti,ypti,grid_Radius.get(),str(grid_quality.get()[0]).lower())
+                    lowerSOG = grid_lowerBound.get()
+                    upperSOG = grid_UppperBound.get()
+                    drawHeatmapnow(xpti,ypti,grid_Radius.get(),lowerSOG,upperSOG,str(grid_quality.get()[0]).lower())
                     """
                     x & y coordinate of clicked location i sent to the functions
                     as well as the radius size and the quality of the plot
@@ -1012,7 +1040,7 @@ class HeatMapFrame(tk.Frame):
 
 
 click_times = 0 #Global variable to record number of clicks
-def drawHeatmapnow(xpti,ypti, radius_size,plt_quality):
+def drawHeatmapnow(xpti,ypti,radius_size,lowSOG,UpSOG,plt_quality):
 
     """
     This function creates a database query and receives a dataframe,
@@ -1028,6 +1056,10 @@ def drawHeatmapnow(xpti,ypti, radius_size,plt_quality):
     radius_size : int
         The size of the radius in kilimoters around the selected spot that
         the heatmap should consist out of
+    lowSOG : float
+        This is the lower bound of the speed that should be plotted
+    UpSOG : float
+        This is the upper bound of the speed that should be plotted
     plt_quality : str
         Basemap quality of the plot
 
@@ -1058,8 +1090,10 @@ def drawHeatmapnow(xpti,ypti, radius_size,plt_quality):
     # SQL Query
     queryHeat = str( "SELECT ST_X(geom::geometry) as lat, ST_Y(geom::geometry) as long FROM " +
         database_table + " WHERE ST_DWithin(geom::geography,ST_GeogFromText('POINT("+
-        str(round(xpti,2)) +" "+str(round(ypti,2)) +")'),"+str(float(radius_size)*1000)+", false);")
+        str(round(xpti,2)) +" "+str(round(ypti,2)) +")'),"+str(float(radius_size)*1000)+", false) and (sog >=" +
+        str(lowSOG)  +") and (sog <= " + str(UpSOG) +")")
 
+    
     #Exception handling when querying the database
     try:
         df_in = readDatabase(queryHeat)
@@ -1089,6 +1123,7 @@ def drawHeatmapnow(xpti,ypti, radius_size,plt_quality):
     xpt, ypt = m(arr_Lat,arr_Long)  #convert inputs to basemap and convert from a dataframe to array
     # Creating the heatmap plot
     heatmap = m.hexbin(xpt,ypt,bins = 'log',gridsize = 1000, cmap=plt.cm.viridis) #cmap=plt.cm.viridis
+
     cbar = m.colorbar(heatmap, location='right',shrink = 0.6)
     cbar.ax.tick_params(labelsize = 25)
     #cbar.set_label(, size = 14)
@@ -1099,6 +1134,7 @@ def drawHeatmapnow(xpti,ypti, radius_size,plt_quality):
     m.drawrivers(color = '#1d6bb5') #draw rivers and set their colours
     plt.title("Spatial Distribution Map", size = 18)
     plt.tight_layout(pad = 5) # fill the white space
+    plt.get_current_fig_manager().full_screen_toggle() #make FULL SCREEN
     plt.show() #show the plot
 
 #####------------------ END OF HEATMAP PLOT FUNCTION ---------------------------

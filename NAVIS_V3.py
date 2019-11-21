@@ -830,7 +830,7 @@ class StaticMapFrame(tk.Frame):
 
             #The query for retrieving the nearest mmsi's of the inputed mmsi
             query_near_20 = str("SELECT mmsi FROM " + str(database_table)+
-            " WHERE (sog > 0) and ST_DWithin(geom::geography," +
+            " WHERE (sog > 0) and  (sog < 30) and ST_DWithin(geom::geography," +
             "ST_GeogFromText('POINT(" +str(lat_mean) +" " + str(long_mean) + ")'),(1000)*1000, false) LIMIT 20;")
             #radius of 1000km
 

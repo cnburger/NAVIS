@@ -105,7 +105,7 @@ def readDatabase(query):
     be sent to the database for the data that needs to be extracted and returns
     a dataframe of the values specified to be extracted
 
-    PARAMATERS
+    PARAMETERS
     ----------
     query: string
         The query that will be sent
@@ -186,7 +186,7 @@ def popMsg(msg):
     """
     This method creates a tkinter window and makes a popup message for the users
 
-    Paramaters
+    PARAMETERS
     ----------
     msg: str
         The message that should be displayed in the Error popup
@@ -1047,7 +1047,7 @@ def drawHeatmapnow(xpti,ypti,radius_size,lowSOG,UpSOG,plt_quality):
     the information is then extracted into arrays and sent to basemap coordiante
     converter and plotted as a heatmap with the hexbin function
 
-    Paramaters
+    PARAMETERS
     ----------
     xpti: float
         The x coordinate of the selected spot on the map
@@ -1093,7 +1093,7 @@ def drawHeatmapnow(xpti,ypti,radius_size,lowSOG,UpSOG,plt_quality):
         str(round(xpti,2)) +" "+str(round(ypti,2)) +")'),"+str(float(radius_size)*1000)+", false) and (sog >=" +
         str(lowSOG)  +") and (sog <= " + str(UpSOG) +")")
 
-    
+
     #Exception handling when querying the database
     try:
         df_in = readDatabase(queryHeat)
@@ -1730,7 +1730,7 @@ def generatePlot(savePlot, plt_resolution):
     This function will create the animation map of the vessel of the selected
     mmsi. With the option to save the input as a mp4 file in the videos directory
 
-    Paramaters:
+    PARAMETERS:
     ----------
     savePlot: boolean
         default = false
@@ -1821,7 +1821,7 @@ def vessel_coordinates_plot(i, skip):
     This function returns the observations that needs to be plotted after
     it is skipped by the skipping paramater from the animation function
 
-    Paramaters
+    PARAMETERS
     ----------
     i: int
         Iteration of the plotting animation
@@ -1881,7 +1881,7 @@ def animate(i):
     """
     This function is resposible for plotting the coordinates on the Basemap map
 
-    Paramaters
+    PARAMETERS
     ----------
     i: int
         Iteration of plot
@@ -1963,7 +1963,8 @@ def animate(i):
                         fc = COLOUR_PALLET[animate_change_col], #arrow colours
                         ec = COLOUR_PALLET[animate_change_col])
 
-    m.plot(x,y,"o-", linewidth = 1,markersize=vessel_marker_size, c = COLOUR_PALLET[animate_change_col]) #newest path colour
+    m.plot(x,y,"o-", linewidth = 1,markersize=vessel_marker_size,
+     c = COLOUR_PALLET[animate_change_col]) #newest path colour
 #####-------- END of ANIMATE FUNCTION -------------------------
 
 app = GISVizTool() #define the class

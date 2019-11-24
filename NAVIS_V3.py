@@ -240,7 +240,7 @@ class GISVizTool(tk.Tk):
                 frame.grid(row = 0, column = 0, sticky = "nsew")
 
             #Welcome screen
-            self.show_frame(WelcomeScreen) #first window to show
+            self.show_frame(HeatMapFrame) #first window to show
 
 #The next function allows for the showing of a new frame/window
     def show_frame(self,cont):
@@ -867,14 +867,19 @@ class HeatMapFrame(tk.Frame):
         global lbl_Patient
 
         #Defining labels for the frame
-        lbl_heatmap_heading = ttk.Label(self,text = "Heatmap Generation",
+        lbl_heatmap_heading = ttk.Label(self,text = "Spatial Distribution Map",
                             font = HEADING_FONT, background = BACKGROUND_COLOUR)
         lbl_chooseRadius = ttk.Label(self,text = "Radius size:",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
+        lbl_dummySpace = ttk.Label(self,text ="       ",
+                            font =("Century Gothic",20),background = BACKGROUND_COLOUR)
 
-        lbl_sogLower = ttk.Label(self,text = "SOG lower bound:",
+        lbl_SOG_UpLow = ttk.Label(self,text = "SOG:",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
-        lbl_sogUpper = ttk.Label(self,text = "SOG upper bound:",
+
+        lbl_sogLower = ttk.Label(self,text = "lower bound",
+                            font = ENTRY_FONT, background = BACKGROUND_COLOUR)
+        lbl_sogUpper = ttk.Label(self,text = "upper bound",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
         lbl_Quality =  ttk.Label(self,text ="Quality of plot:",
                             font =PLOT_FONT_Label,background = BACKGROUND_COLOUR)
@@ -890,8 +895,6 @@ class HeatMapFrame(tk.Frame):
                             font = ("Century Gothic",8), background = BACKGROUND_COLOUR)
         lbl_Patient = ttk.Label(self,text = "",
                             font = ENTRY_FONT, background = BACKGROUND_COLOUR)
-        lbl_how = ttk.Label(self,text = "*double click on centre",
-                            font = ("Century Gothic",8), background = BACKGROUND_COLOUR)
 
         #Defining the Combobox objects
         #The radius is denoted in kilometers from the selected dot
@@ -914,11 +917,11 @@ class HeatMapFrame(tk.Frame):
         grid_quality.current(1) #default intermediate
 
         #initiate the choosing ability to select the centre of the radius that will be plotted
-        btn_chooseCentre = ttk.Button(self,text="Choose Centre & Plot", width = 25,
+        btn_chooseCentre = ttk.Button(self,text="Choose Centre", width = 15,
                             style = 'NAV.TButton', command = lambda: chooseCentre())
                             #lambda delays the function that it ist not executed on startup
 
-        btn_back= ttk.Button(self,text="Back", width = 25, style = 'NAV.TButton',
+        btn_back= ttk.Button(self,text="Back", width = 15, style = 'NAV.TButton',
         command = lambda: controller.show_frame(WelcomeScreen) ) #command = funtion to execute
 
         #configuration of the tkinter objects and placements
@@ -938,17 +941,18 @@ class HeatMapFrame(tk.Frame):
         lbl_chooseRadiusKM.grid(row = 2, column = 3, sticky = 'w',padx = BUTTON_PADX,
                             pady = BUTTON_PADY)
 
-        lbl_sogLower.grid(row= 4, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        lbl_sogUpper.grid(row= 5, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        grid_lowerBound.grid(row= 4, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        grid_UppperBound.grid(row= 5, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        lbl_boundsInclusive.grid(row= 5, column = 3,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_dummySpace.grid(row= 4, column = 0,padx = BUTTON_PADX, pady = BUTTON_PADY)
 
-        btn_chooseCentre.grid(row=7,column = 2, pady = 10)
-        lbl_how.configure(anchor = 'w')
-        lbl_how.grid(row=7, column = 3, sticky = "w")
-        btn_back.grid(row=8, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
-        lbl_Patient.grid(row=9,column = 2, pady=50, columnspan = 10)
+        lbl_SOG_UpLow.grid(row= 5, column = 0,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_sogLower.grid(row= 5, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_sogUpper.grid(row= 5, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        grid_lowerBound.grid(row= 6, column = 1,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        grid_UppperBound.grid(row= 6, column = 2,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_boundsInclusive.grid(row= 6, column = 3,padx = BUTTON_PADX, pady = BUTTON_PADY)
+
+        btn_chooseCentre.grid(row=10,column = 3, pady = 10)
+        btn_back.grid(row=11, column = 3,padx = BUTTON_PADX, pady = BUTTON_PADY)
+        lbl_Patient.grid(row=12,column = 3, pady=50, columnspan = 10)
 
 
         def chooseCentre():

@@ -5,6 +5,7 @@ import math
 
 #for delays
 import time
+from datetime import datetime
 
 #Import for PostgreSQL functionality
 import sqlalchemy
@@ -240,7 +241,7 @@ class GISVizTool(tk.Tk):
                 frame.grid(row = 0, column = 0, sticky = "nsew")
 
             #Welcome screen
-            self.show_frame(HeatMapFrame) #first window to show
+            self.show_frame(WelcomeScreen) #first window to show
 
 #The next function allows for the showing of a new frame/window
     def show_frame(self,cont):
@@ -503,8 +504,8 @@ class StaticMapFrame(tk.Frame):
                         will be used to do the query
                 """
                 temp = str("SELECT ST_X(geom::geometry) as lat, " +
-                " ST_Y(geom::geometry) as long, sog, cog, datetime FROM " +database_table +
-                " WHERE (MMSI = "+mmsi+ ") ORDER BY datetime ASC")
+                " ST_Y(geom::geometry) as long, sog, cog, datetimestamp FROM " +database_table +
+                " WHERE (MMSI = "+mmsi+ ") ORDER BY datetimestamp ASC")
                 return temp
 
             dataframe_list = []  #creating a list of all the dataframes of different vessels
@@ -621,7 +622,7 @@ class StaticMapFrame(tk.Frame):
                 long = df['long'].values
                 sog = df['sog'].values
                 cog = df['cog'].values
-                datetime_df = pd.to_datetime(df['datetime'])
+                datetime_df = pd.to_datetime(df['datetimestamp'])
 
                 #These paramater chages the colour of the vessel limit the amount of colours
                 df_change_colour = math.floor(df_lenght/150) #there is 150 colours to choose from
@@ -823,8 +824,8 @@ class StaticMapFrame(tk.Frame):
             #Set values and query the database
             mmsi_main_df = readDatabase(
             str("SELECT mmsi, ST_X(geom::geometry) as lat, ST_Y(geom::geometry) as long, " +
-            " sog, datetime FROM " + database_table+" WHERE (MMSI = "+ str(entry_MMSI.get()) +
-            ")  ORDER BY datetime ASC"))
+            " sog, datetimestamp FROM " + database_table+" WHERE (MMSI = "+ str(entry_MMSI.get()) +
+            ")  ORDER BY datetimestamp ASC"))
 
             #Get the average LOGITUDE and latitude value so that we can get vessels in the area
             lat_mean =  np.mean(mmsi_main_df["lat"].values)
@@ -1193,10 +1194,10 @@ class DBLoginPage(tk.Frame):
 
         #Adding information to the text boxes - for faster testing
         entry_UserName.insert(0 ,'postgres')
-        entry_Password.insert(0, '')
+        entry_Password.insert(0, '!')
         entry_ip.insert(0, '127.0.0.1')
-        entry_DBName.insert(0 ,'post_gis' )
-        entry_TableName.insert(0 , 'DCRON_jan2016')
+        entry_DBName.insert(0 ,'NARI_MBDW' )
+        entry_TableName.insert(0 , '')
 
 
         def test_DB():
@@ -1392,7 +1393,7 @@ class VesselStats(tk.Frame):
 
         #Entry boxe object for the vessel id
         entry_MMSI = ttk.Entry(self,font =ENTRY_FONT)
-        entry_MMSI.insert(0,'240985000') #default vessel id
+        entry_MMSI.insert(0,'227003050') #default vessel id
         #667001286
         #240985000
 
@@ -1443,21 +1444,23 @@ class VesselStats(tk.Frame):
             VesselType = 'NA'
 
             #Database query, ST_X = convert to lat, ST_Y = convert to long
-            myQuery = str("SELECT mmsi, ST_X(geom::geometry) as latitude, ST_Y(geom::geometry) as longitude, sog, cog, navigationalstatus, datetime FROM "+
-            str(database_table)+ " WHERE mmsi = "+ str(mmsi_entry) + " ORDER BY datetime ASC")
+            myQuery = str("SELECT mmsi, ST_X(geom::geometry) as latitude, ST_Y(geom::geometry) as longitude, sog, cog, navstat, datetimestamp FROM "+
+            str(database_table)+ " WHERE mmsi = "+ str(mmsi_entry) + " ORDER BY datetimestamp ASC")
 
             # Exception handling try to read the database, there should'nt be an error
             try:
                 queryData = readDatabase(myQuery) #save dataframe as queryData
             except:
-                popMsg("Databse read FAILED")
+                popMsg("Database read FAILED")
 
             # Assigning the global dataframes to variables from the database query
             df_Longitude = queryData.loc[:,'longitude']
             df_Latitude = queryData.loc[:,'latitude']
             df_SOG = queryData.loc[:,'sog']
-            df_NAV_status = queryData.loc[:,'navigationalstatus']
-            df_vessel_time =queryData.loc[:,'datetime']
+            df_NAV_status = queryData.loc[:,'navstat']
+            df_vessel_time = queryData.loc[:,'datetimestamp']
+
+
             df_COG = queryData.loc[:,'cog'] #extracting the course over ground
 
             #Extracting statistics and saving them
@@ -1923,8 +1926,12 @@ def animate(i):
                     ec="#40d3e3", fc="#40d3e3")) #colour of the label
 
     col_change = int(int(vessel_observations/(OBSERVATION_SKIP)-1)/150)
-    if(((i % col_change) == 0) and animate_change_col < 149 ):
-        animate_change_col += 1
+
+    if col_change == 0:  #incase a MMSI hass less than 151 observations -- colour will remain static
+        animate_change_col = 1
+    else:
+        if(((i % col_change) == 0) and animate_change_col < 149 ):
+            animate_change_col += 1
 
     #progress label calcualtion
     progress_perc = int( (i/(vessel_observations/OBSERVATION_SKIP-2))*100)
